@@ -1,0 +1,26 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+*::-webkit-scrollbar {
+  width: 0.3em;
+  height: 0.3em;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #C4C4C4;
+  border-radius: 0.75em;
+
+  &:hover {
+    background-color: rgba(90, 90, 113, 0.4);
+  }
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 0.75em;
+}

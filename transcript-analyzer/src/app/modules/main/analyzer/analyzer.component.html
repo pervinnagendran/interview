@@ -1,0 +1,142 @@
+<!-- Agents and Call Selection ----- (Start) -->
+<ng-template #subHeader [formGroup]="form">
+    <div fxLayout="row" fxFlexFill>
+        <div id="call-selection" fxFlex="60">
+            <!-- Agent Selection -->
+            <mat-form-field floatLabel="never">
+                <mat-label>Agent</mat-label>
+                <mat-icon matPrefix>supervised_user_circle</mat-icon>
+                <mat-select [disableOptionCentering]="true" formControlName="agent">
+                    <mat-option *ngFor="let agent of (agents$ | async)" [value]="agent">{{ agent.full_name }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Call Selection -->
+            <mat-form-field floatLabel="never">
+                <mat-label>Call</mat-label>
+                <mat-icon matPrefix>phone</mat-icon>
+                <mat-select [disableOptionCentering]="true" formControlName="call">
+                    <mat-option *ngFor="let call of (calls$ | async)" [value]="call">
+                        {{ call.call_start_time | date: 'd.M.yyyy' }} - {{ getCustomerName(call) }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <!-- Matching Sensitivity Selection -->
+        <div *ngIf="(source$ | async)" id="intensity-selection" fxLayout="row" fxFlex="40" fxLayoutAlign="space-between center" fxLayoutGap="24px">
+            <mat-label>MATCHING SENSITIVITY</mat-label>
+            <mat-slider min="0" max="100" step="1" formControlName="sensitivity"></mat-slider>
+            {{ form.controls.sensitivity.value }}%
+        </div>
+    </div>
+</ng-template>
+<!-- Agents and Call Selection ----- (End) -->
+
+<!-- Transcript and Script ----- (Start) -->
+<section *ngIf="(source$ | async) as source; else selectionPending" class="content" fxLayout="row" fxFlex="grow" fxLayoutAlign="space-between" fxLayoutGap="24px">
+    <!-- Transcript Section -->
+    <mat-card fxFlex="grow">
+        <mat-card-header fxLayoutAlign="space-between center">
+            <mat-card-title>Real</mat-card-title>
+
+            <!-- Percentile of Match -->
+            <div fxLayout="row" fxLayoutGap="14px" fxLayoutAlign="space-between center">
+                <div class="match-percent">{{ source.real }}%</div>
+                <div class="pie-chart" [style.--pie-deg]="3.6 * source.real + 'deg'"></div>
+            </div>
+        </mat-card-header>
+
+        <mat-card-content>
+            <table mat-table [dataSource]="source.transcripts" width="100%">
+                <!-- Time Interval of Script -->
+                <ng-container matColumnDef="time">
+                    <th mat-header-cell *matHeaderCellDef>Time</th>
+                    <td mat-cell *matCellDef="let transcript">
+                        {{ transcript.timeFrom | timeInterval }}
+                    </td>
+                </ng-container>
+
+                <!-- Speaker -->
+                <ng-container matColumnDef="speaker">
+                    <th mat-header-cell *matHeaderCellDef>Speaker</th>
+                    <td mat-cell *matCellDef="let transcript">
+                        {{ transcript.speaker }}
+                    </td>
+                </ng-container>
+
+                <!-- Sentence spoken by the speaker -->
+                <ng-container matColumnDef="sentence">
+                    <th mat-header-cell *matHeaderCellDef>Sentence</th>
+                    <td mat-cell *matCellDef="let transcript">
+                        <div [ngClass]="{ matcher: hasMatch(transcript.matching_sentence, transcript.similarity) }"
+                             [matTooltip]="transcript.match_info"
+                             (mouseenter)="selectMatch(transcript.match_info ? transcript.matching_sentence: null)"
+                             (mouseleave)="selectMatch()">
+                            {{ transcript.sentence }}
+                        </div>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- Script Section -->
+    <mat-card fxFlex="grow">
+        <mat-card-header fxLayoutAlign="space-between center">
+            <mat-card-title>Expected</mat-card-title>
+
+            <!-- Percentile of Match -->
+            <div fxLayout="row" fxLayoutGap="14px" fxLayoutAlign="space-between center">
+                <div class="match-percent">{{ source.expected }}%</div>
+                <div class="pie-chart" [style.--pie-deg]="3.6 * source.expected + 'deg'"></div>
+            </div>
+        </mat-card-header>
+
+        <mat-card-content>
+            <table mat-table [dataSource]="source.scripts" width="100%">
+                <!-- Line # -->
+                <ng-container matColumnDef="time">
+                    <th mat-header-cell *matHeaderCellDef>Line</th>
+                    <td mat-cell *matCellDef="let transcript; let i = index">
+                        {{ i + 1 }}
+                    </td>
+                </ng-container>
+
+                <!-- Rep -->
+                <ng-container matColumnDef="speaker">
+                    <th mat-header-cell *matHeaderCellDef>Speaker</th>
+                    <td mat-cell *matCellDef="let transcript">
+                        Rep:
+                    </td>
+                </ng-container>
+
+                <!-- Sentence to be spoken -->
+                <ng-container matColumnDef="sentence">
+                    <th mat-header-cell *matHeaderCellDef>Sentence</th>
+                    <td mat-cell *matCellDef="let transcript">
+                        <div class="matcher" [ngClass]="{ highlight: transcript.isHovered }">
+                            {{ transcript.sentence }}
+                        </div>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </mat-card-content>
+    </mat-card>
+</section>
+<!-- Transcript and Script ----- (End) -->
+
+<!-- No Selection or Call Details are not present -->
+<ng-template #selectionPending>
+    <div fxLayout="column" fxLayoutAlign="center center" class="selection-pending">
+        <img src="assets/img/bg-pending.png" alt="selection_pending"/>
+        <h2>Selection pending</h2>
+        <p>Select a call from top menu and a transcript analysis will be shown here</p>
+    </div>
+</ng-template>

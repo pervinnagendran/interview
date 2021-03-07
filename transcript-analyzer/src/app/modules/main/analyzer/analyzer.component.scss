@@ -1,0 +1,122 @@
+$mat-card-header-bg: #EFEFF1 !default;
+$mat-card-header-border-color: rgba(#000, .12) !default;
+
+// Slider
+mat-slider {
+    margin: 0 16px;
+    width: 400px;
+}
+
+mat-label {
+    margin: 0 !important;
+}
+
+:host {
+    height: calc(100% - 56px - 56px);
+
+    // Card
+    mat-card {
+        padding: 0 !important;
+
+        mat-card-header {
+            padding: 0.75em 2em 0.75em 1em;
+            background: $mat-card-header-bg;
+            border-bottom: 1px solid $mat-card-header-border-color;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        mat-card-title {
+            margin-bottom: 0 !important;
+        }
+
+        mat-card-content {
+            max-height: 68vh;
+            overflow: auto;
+            padding: 0 2em 1.5em 2em;
+        }
+    }
+
+    // Table
+    .mat-column {
+        &-time {
+            width: 64px;
+        }
+
+        &-speaker {
+            width: 72px;
+        }
+
+        &-sentence:not(.mat-header-cell) {
+            .matcher {
+                background: rgba(#5A5A71, .2);
+                transition: background .4s;
+                padding: 0.5em;
+
+                &:hover {
+                    background: rgba(#5A5A71, .4);
+                }
+            }
+        }
+    }
+
+    th.mat-header-cell:first-of-type, td.mat-cell:first-of-type {
+        padding-left: 0;
+    }
+
+    th.mat-header-cell:last-of-type, td.mat-cell:last-of-type {
+        padding-right: 0;
+    }
+
+    tr.mat-header-row, tr.mat-row {
+        height: auto;
+    }
+
+    th.mat-header-cell {
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+        padding: 1.75em 0.5em 0.75em 0.5em;
+    }
+
+    td.mat-cell {
+        border-bottom: none;
+        padding: 0.75em 0.5em 0 0.5em;
+    }
+
+    .highlight {
+        background: rgba(#5A5A71, .4) !important;
+    }
+
+    // Pie Chart
+    .pie-chart {
+        width: 2.2em;
+        height: 2.2em;
+        border-radius: 50%;
+        background-image: conic-gradient(#5A5A71 var(--pie-deg), rgba(0, 0, 0, 0.12) 0deg);
+    }
+
+    .match-percent {
+        font-size: 1.25em;
+        font-weight: 500;
+    }
+
+    .selection-pending {
+        height: calc(100% - 56px - 56px);
+        width: 100%;
+
+        img {
+            height: 18em;
+            width: 20em;
+        }
+
+        h2 {
+            margin-top: 1em;
+        }
+
+        p {
+            max-width: 20em;
+            line-height: 1.5em;
+            text-align: center;
+        }
+    }
+}
